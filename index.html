@@ -266,9 +266,9 @@
 
 <script>
   // =============================================
-  // DADOS INICIAIS — edite aqui para personalizar
+  // DADOS INICIAIS — só usados na primeira visita
   // =============================================
-  let itens = [
+  const ITENS_PADRAO = [
     { id: 1, nome: 'Arroz 5kg', valor: 28.90, cat: 'mercado', obs: 'Marca Camil', comprado: true },
     { id: 2, nome: 'Feijão 1kg', valor: 9.50, cat: 'mercado', obs: '', comprado: true },
     { id: 3, nome: 'Frango 2kg', valor: 25.00, cat: 'mercado', obs: 'Peito sem osso', comprado: false },
@@ -278,6 +278,37 @@
     { id: 7, nome: 'Óleo de soja 900ml', valor: 8.90, cat: 'mercado', obs: '', comprado: false },
     { id: 8, nome: 'Sabão em pó 1kg', valor: 14.90, cat: 'casa', obs: '', comprado: false },
   ];
+
+  // =============================================
+  // localStorage — salva tudo no navegador
+  // =============================================
+  function salvar() {
+    localStorage.setItem('compras_itens', JSON.stringify(itens));
+    localStorage.setItem('compras_nextId', nextId);
+    localStorage.setItem('compras_orcamento', document.getElementById('input-orcamento').value);
+  }
+
+  function carregar() {
+    const itensJson = localStorage.getItem('compras_itens');
+    const savedNextId = localStorage.getItem('compras_nextId');
+    const savedOrcamento = localStorage.getItem('compras_orcamento');
+
+    if (itensJson) {
+      itens = JSON.parse(itensJson);
+      nextId = savedNextId ? parseInt(savedNextId) : itens.length + 1;
+    } else {
+      // primeira visita: carrega os dados de exemplo
+      itens = ITENS_PADRAO;
+      nextId = 9;
+      salvar();
+    }
+
+    if (savedOrcamento) {
+      document.getElementById('input-orcamento').value = savedOrcamento;
+    }
+  }
+
+  let itens = [];
   let nextId = 9;
   let filtroAtual = 'todos';
 
@@ -355,12 +386,14 @@
   function toggleItem(id) {
     const item = itens.find(i => i.id === id);
     if (item) item.comprado = !item.comprado;
+    salvar();
     renderizar();
   }
 
   function removerItem(id) {
     if (confirm('Remover este item da lista?')) {
       itens = itens.filter(i => i.id !== id);
+      salvar();
       renderizar();
     }
   }
@@ -384,6 +417,7 @@
     document.getElementById('f-valor').value = '';
     document.getElementById('f-obs').value = '';
     document.getElementById('form-add').classList.remove('aberto');
+    salvar();
     renderizar();
   }
 
@@ -394,11 +428,16 @@
     renderizar();
   }
 
-  document.getElementById('input-orcamento').addEventListener('input', renderizar);
+  document.getElementById('input-orcamento').addEventListener('input', () => {
+    salvar();
+    renderizar();
+  });
   document.getElementById('f-nome').addEventListener('keydown', e => {
     if (e.key === 'Enter') adicionarItem();
   });
 
+  // Inicia carregando os dados salvos
+  carregar();
   renderizar();
 </script>
 </body>
