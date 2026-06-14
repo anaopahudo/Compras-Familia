@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Compras da Família 🛒</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.x/tabler-icons.min.css">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+      background: #f5f5f0;
+      color: #1a1a1a;
+      min-height: 100vh;
+      padding: 1rem;
+    }
+
+    .container { max-width: 700px; margin: 0 auto; }
+
+    /* Header */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      flex-wrap: wrap; gap: 12px;
+      background: white; border-radius: 16px; padding: 1.25rem 1.5rem;
+      margin-bottom: 1rem; border: 1px solid #e8e8e4;
+    }
+    .header-title { display: flex; align-items: center; gap: 10px; }
+    .header-title i { font-size: 24px; color: #1D9E75; }
+    h1 { font-size: 20px; font-weight: 600; }
+    .subtitulo { font-size: 13px; color: #888; margin-top: 2px; }
+    .badge-mes {
+      background: #E1F5EE; color: #085041;
+      font-size: 12px; font-weight: 600; padding: 5px 12px;
+      border-radius: 20px;
+    }
+
+    /* Cards de resumo */
+    .resumo-grid {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+      gap: 10px; margin-bottom: 1rem;
+    }
+    .card-resumo {
+      background: white; border-radius: 12px; padding: 1rem;
+      border: 1px solid #e8e8e4;
+    }
+    .card-resumo .label { font-size: 12px; color: #888; margin-bottom: 6px; display: flex; align-items: center; gap: 5px; }
+    .card-resumo .label i { font-size: 14px; }
+    .card-resumo .valor { font-size: 22px; font-weight: 600; color: #1a1a1a; }
+    .card-resumo .valor.verde { color: #1D9E75; }
+    .card-resumo .valor.amber { color: #BA7517; }
+    .card-resumo .valor.vermelho { color: #E24B4A; }
+
+    /* Orçamento */
+    .card-orcamento {
+      background: white; border-radius: 12px; padding: 1rem 1.25rem;
+      border: 1px solid #e8e8e4; margin-bottom: 1rem;
+    }
+    .orcamento-row {
+      display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+      margin-bottom: 10px;
+    }
+    .orcamento-row label { font-size: 14px; color: #555; white-space: nowrap; display: flex; align-items: center; gap: 6px; }
+    .orcamento-row input {
+      background: #f5f5f0; border: 1px solid #ddd; border-radius: 8px;
+      padding: 7px 10px; font-size: 14px; width: 120px; color: #1a1a1a;
+    }
+    .orcamento-row input:focus { outline: none; border-color: #1D9E75; }
+    .barra-wrap { flex: 1; min-width: 140px; }
+    .barra-textos { display: flex; justify-content: space-between; font-size: 12px; color: #888; margin-bottom: 5px; }
+    .barra { height: 8px; background: #f0f0ea; border-radius: 10px; overflow: hidden; }
+    .barra-fill { height: 100%; background: #1D9E75; border-radius: 10px; transition: width 0.3s, background 0.3s; }
+
+    /* Seção lista */
+    .card-lista {
+      background: white; border-radius: 16px;
+      border: 1px solid #e8e8e4; overflow: hidden;
+    }
+    .lista-header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 1.25rem; border-bottom: 1px solid #f0f0ea; flex-wrap: wrap; gap: 10px;
+    }
+    h2 { font-size: 16px; font-weight: 600; }
+
+    /* Botões */
+    .btn {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; border: 1px solid #d0d0c8;
+      border-radius: 8px; padding: 7px 14px; font-size: 13px;
+      cursor: pointer; color: #1a1a1a; transition: background 0.15s;
+      font-family: inherit;
+    }
+    .btn:hover { background: #f5f5f0; }
+    .btn i { font-size: 15px; }
+    .btn-verde { background: #1D9E75; color: white; border-color: #1D9E75; }
+    .btn-verde:hover { background: #0F6E56; }
+    .btn-danger { color: #E24B4A; border-color: #f7c1c1; padding: 5px 8px; }
+    .btn-danger:hover { background: #FCEBEB; }
+
+    /* Tabs */
+    .tabs { display: flex; gap: 6px; padding: 10px 1.25rem; flex-wrap: wrap; border-bottom: 1px solid #f0f0ea; }
+    .tab {
+      background: transparent; border: 1px solid #d0d0c8; border-radius: 20px;
+      padding: 4px 12px; font-size: 12px; cursor: pointer; color: #666;
+      transition: all 0.15s; font-family: inherit;
+    }
+    .tab.ativo { background: #1D9E75; color: white; border-color: #1D9E75; }
+
+    /* Form de adicionar */
+    .form-add {
+      background: #fafaf8; border-bottom: 1px solid #f0f0ea;
+      padding: 1rem 1.25rem;
+      display: none; flex-direction: column; gap: 10px;
+    }
+    .form-add.aberto { display: flex; }
+    .form-linha { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+    @media (max-width: 480px) { .form-linha { grid-template-columns: 1fr; } }
+    .form-add input, .form-add select {
+      background: white; border: 1px solid #ddd; border-radius: 8px;
+      padding: 8px 12px; font-size: 14px; color: #1a1a1a; width: 100%;
+      font-family: inherit;
+    }
+    .form-add input:focus, .form-add select:focus { outline: none; border-color: #1D9E75; }
+    .form-acoes { display: flex; gap: 8px; justify-content: flex-end; }
+
+    /* Itens */
+    .lista-itens { display: flex; flex-direction: column; }
+    .item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 12px 1.25rem; border-bottom: 1px solid #f0f0ea;
+      transition: background 0.1s;
+    }
+    .item:last-child { border-bottom: none; }
+    .item:hover { background: #fafaf8; }
+    .item.comprado { opacity: 0.5; }
+    .item.comprado .item-nome { text-decoration: line-through; }
+    .item-check { width: 17px; height: 17px; accent-color: #1D9E75; cursor: pointer; flex-shrink: 0; }
+    .item-info { flex: 1; min-width: 0; }
+    .item-nome { font-size: 14px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .item-obs { font-size: 12px; color: #888; margin-top: 2px; }
+    .item-cat {
+      font-size: 11px; padding: 2px 8px; border-radius: 20px;
+      font-weight: 600; flex-shrink: 0; white-space: nowrap;
+    }
+    .cat-mercado { background: #E1F5EE; color: #085041; }
+    .cat-farmacia { background: #FAEEDA; color: #633806; }
+    .cat-casa { background: #E6F1FB; color: #0C447C; }
+    .cat-outro { background: #f0f0ea; color: #555; }
+    .item-valor { font-size: 14px; font-weight: 600; white-space: nowrap; }
+
+    .vazio {
+      text-align: center; padding: 2.5rem; color: #aaa; font-size: 14px;
+    }
+    .vazio i { font-size: 36px; display: block; margin-bottom: 8px; }
+
+    .nota {
+      font-size: 13px; color: #666; background: #fafaf8;
+      border-radius: 10px; padding: 10px 14px; margin-top: 1rem;
+      border: 1px solid #e8e8e4;
+    }
+
+    @media (max-width: 480px) {
+      .resumo-grid { grid-template-columns: 1fr 1fr; }
+      .header { padding: 1rem; }
+    }
+  </style>
+</head>
+<body>
+<div class="container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="header-title">
+      <i class="ti ti-shopping-cart"></i>
+      <div>
+        <h1>Compras da Família</h1>
+        <div class="subtitulo" id="subtitulo">Acompanhe os gastos do mês</div>
+      </div>
+    </div>
+    <span class="badge-mes" id="badge-mes">Junho 2025</span>
+  </div>
+
+  <!-- Resumo -->
+  <div class="resumo-grid">
+    <div class="card-resumo">
+      <div class="label"><i class="ti ti-list"></i> Total de itens</div>
+      <div class="valor" id="total-itens">0</div>
+    </div>
+    <div class="card-resumo">
+      <div class="label"><i class="ti ti-check"></i> Já comprados</div>
+      <div class="valor verde" id="total-comprados">0</div>
+    </div>
+    <div class="card-resumo">
+      <div class="label"><i class="ti ti-coin"></i> Gasto até agora</div>
+      <div class="valor" id="total-gasto">R$ 0,00</div>
+    </div>
+    <div class="card-resumo">
+      <div class="label"><i class="ti ti-chart-pie"></i> Do orçamento</div>
+      <div class="valor amber" id="pct-orcamento">0%</div>
+    </div>
+  </div>
+
+  <!-- Orçamento -->
+  <div class="card-orcamento">
+    <div class="orcamento-row">
+      <label for="input-orcamento"><i class="ti ti-wallet"></i> Orçamento do mês:</label>
+      <input type="number" id="input-orcamento" value="1500" min="0" step="50">
+      <div class="barra-wrap">
+        <div class="barra-textos">
+          <span id="gasto-label">R$ 0,00 gastos</span>
+          <span id="orcamento-label">de R$ 1.500,00</span>
+        </div>
+        <div class="barra"><div class="barra-fill" id="barra" style="width:0%"></div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Lista -->
+  <div class="card-lista">
+    <div class="lista-header">
+      <h2>Lista de compras</h2>
+      <button class="btn btn-verde" id="btn-add" onclick="toggleForm()">
+        <i class="ti ti-plus"></i> Adicionar item
+      </button>
+    </div>
+
+    <!-- Formulário -->
+    <div class="form-add" id="form-add">
+      <div class="form-linha">
+        <input type="text" id="f-nome" placeholder="Nome do item" autocomplete="off">
+        <input type="number" id="f-valor" placeholder="Valor (R$)" min="0" step="0.01">
+      </div>
+      <div class="form-linha">
+        <select id="f-cat">
+          <option value="mercado">🥦 Mercado</option>
+          <option value="farmacia">💊 Farmácia</option>
+          <option value="casa">🏠 Casa</option>
+          <option value="outro">📦 Outro</option>
+        </select>
+        <input type="text" id="f-obs" placeholder="Observação (opcional)">
+      </div>
+      <div class="form-acoes">
+        <button class="btn" onclick="toggleForm()">Cancelar</button>
+        <button class="btn btn-verde" onclick="adicionarItem()">
+          <i class="ti ti-plus"></i> Adicionar
+        </button>
+      </div>
+    </div>
+
+    <!-- Tabs -->
+    <div class="tabs">
+      <button class="tab ativo" onclick="filtrar('todos', this)">Todos</button>
+      <button class="tab" onclick="filtrar('pendente', this)">Pendentes</button>
+      <button class="tab" onclick="filtrar('comprado', this)">Comprados</button>
+      <button class="tab" onclick="filtrar('mercado', this)">🥦 Mercado</button>
+      <button class="tab" onclick="filtrar('farmacia', this)">💊 Farmácia</button>
+      <button class="tab" onclick="filtrar('casa', this)">🏠 Casa</button>
+    </div>
+
+    <div class="lista-itens" id="lista"></div>
+  </div>
+
+  <p class="nota">💡 Dica: marque os itens conforme for comprando. O total é atualizado automaticamente!</p>
+
+</div>
+
+<script>
+  // =============================================
+  // DADOS INICIAIS — edite aqui para personalizar
+  // =============================================
+  let itens = [
+    { id: 1, nome: 'Arroz 5kg', valor: 28.90, cat: 'mercado', obs: 'Marca Camil', comprado: true },
+    { id: 2, nome: 'Feijão 1kg', valor: 9.50, cat: 'mercado', obs: '', comprado: true },
+    { id: 3, nome: 'Frango 2kg', valor: 25.00, cat: 'mercado', obs: 'Peito sem osso', comprado: false },
+    { id: 4, nome: 'Leite integral 6un', valor: 33.00, cat: 'mercado', obs: '', comprado: false },
+    { id: 5, nome: 'Dipirona 10cp', valor: 7.80, cat: 'farmacia', obs: 'Genérico', comprado: true },
+    { id: 6, nome: 'Detergente 3un', valor: 12.50, cat: 'casa', obs: '', comprado: false },
+    { id: 7, nome: 'Óleo de soja 900ml', valor: 8.90, cat: 'mercado', obs: '', comprado: false },
+    { id: 8, nome: 'Sabão em pó 1kg', valor: 14.90, cat: 'casa', obs: '', comprado: false },
+  ];
+  let nextId = 9;
+  let filtroAtual = 'todos';
+
+  const nomesMes = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+
+  function getMesAtual() {
+    const d = new Date();
+    return nomesMes[d.getMonth()] + ' ' + d.getFullYear();
+  }
+
+  document.getElementById('badge-mes').textContent = getMesAtual();
+  document.getElementById('subtitulo').textContent = 'Compras de ' + getMesAtual();
+
+  function fmtReal(v) {
+    return 'R$ ' + v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+  }
+
+  function catLabel(cat) {
+    const m = { mercado: '🥦 Mercado', farmacia: '💊 Farmácia', casa: '🏠 Casa', outro: '📦 Outro' };
+    return m[cat] || cat;
+  }
+
+  function renderizar() {
+    const lista = document.getElementById('lista');
+    const orcamento = parseFloat(document.getElementById('input-orcamento').value) || 0;
+
+    const comprados = itens.filter(i => i.comprado);
+    const gastoTotal = comprados.reduce((s, i) => s + i.valor, 0);
+    const pct = orcamento > 0 ? Math.min(100, Math.round(gastoTotal / orcamento * 100)) : 0;
+
+    document.getElementById('total-itens').textContent = itens.length;
+    document.getElementById('total-comprados').textContent = comprados.length;
+    document.getElementById('total-gasto').textContent = fmtReal(gastoTotal);
+
+    const pctEl = document.getElementById('pct-orcamento');
+    pctEl.textContent = pct + '%';
+    pctEl.className = 'valor ' + (pct > 80 ? 'vermelho' : pct > 50 ? 'amber' : 'verde');
+
+    const barra = document.getElementById('barra');
+    barra.style.width = pct + '%';
+    barra.style.background = pct > 80 ? '#E24B4A' : pct > 50 ? '#BA7517' : '#1D9E75';
+
+    document.getElementById('gasto-label').textContent = fmtReal(gastoTotal) + ' gastos';
+    document.getElementById('orcamento-label').textContent = 'de ' + fmtReal(orcamento);
+
+    let filtrados = itens;
+    if (filtroAtual === 'comprado') filtrados = itens.filter(i => i.comprado);
+    else if (filtroAtual === 'pendente') filtrados = itens.filter(i => !i.comprado);
+    else if (['mercado','farmacia','casa','outro'].includes(filtroAtual)) {
+      filtrados = itens.filter(i => i.cat === filtroAtual);
+    }
+
+    if (filtrados.length === 0) {
+      lista.innerHTML = '<div class="vazio"><i class="ti ti-shopping-cart"></i>Nenhum item aqui ainda</div>';
+      return;
+    }
+
+    lista.innerHTML = filtrados.map(item => `
+      <div class="item ${item.comprado ? 'comprado' : ''}" id="item-${item.id}">
+        <input type="checkbox" class="item-check" ${item.comprado ? 'checked' : ''}
+          onchange="toggleItem(${item.id})" aria-label="Marcar ${item.nome} como comprado">
+        <div class="item-info">
+          <div class="item-nome">${item.nome}</div>
+          ${item.obs ? `<div class="item-obs">${item.obs}</div>` : ''}
+        </div>
+        <span class="item-cat cat-${item.cat}">${catLabel(item.cat)}</span>
+        <span class="item-valor">${fmtReal(item.valor)}</span>
+        <button class="btn btn-danger" onclick="removerItem(${item.id})" aria-label="Remover ${item.nome}">
+          <i class="ti ti-trash" style="font-size:14px"></i>
+        </button>
+      </div>
+    `).join('');
+  }
+
+  function toggleItem(id) {
+    const item = itens.find(i => i.id === id);
+    if (item) item.comprado = !item.comprado;
+    renderizar();
+  }
+
+  function removerItem(id) {
+    if (confirm('Remover este item da lista?')) {
+      itens = itens.filter(i => i.id !== id);
+      renderizar();
+    }
+  }
+
+  function toggleForm() {
+    const f = document.getElementById('form-add');
+    f.classList.toggle('aberto');
+    if (f.classList.contains('aberto')) document.getElementById('f-nome').focus();
+  }
+
+  function adicionarItem() {
+    const nome = document.getElementById('f-nome').value.trim();
+    const valor = parseFloat(document.getElementById('f-valor').value) || 0;
+    const cat = document.getElementById('f-cat').value;
+    const obs = document.getElementById('f-obs').value.trim();
+
+    if (!nome) { document.getElementById('f-nome').focus(); return; }
+
+    itens.unshift({ id: nextId++, nome, valor, cat, obs, comprado: false });
+    document.getElementById('f-nome').value = '';
+    document.getElementById('f-valor').value = '';
+    document.getElementById('f-obs').value = '';
+    document.getElementById('form-add').classList.remove('aberto');
+    renderizar();
+  }
+
+  function filtrar(tipo, btn) {
+    filtroAtual = tipo;
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('ativo'));
+    btn.classList.add('ativo');
+    renderizar();
+  }
+
+  document.getElementById('input-orcamento').addEventListener('input', renderizar);
+  document.getElementById('f-nome').addEventListener('keydown', e => {
+    if (e.key === 'Enter') adicionarItem();
+  });
+
+  renderizar();
+</script>
+</body>
+</html>
