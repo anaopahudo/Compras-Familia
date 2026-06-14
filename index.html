@@ -219,9 +219,14 @@
   <div class="card-lista">
     <div class="lista-header">
       <h2>Lista de compras</h2>
-      <button class="btn btn-verde" id="btn-add" onclick="toggleForm()">
-        <i class="ti ti-plus"></i> Adicionar item
-      </button>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn" onclick="novoMes()">
+          <i class="ti ti-calendar-plus"></i> Novo m&#234;s
+        </button>
+        <button class="btn btn-verde" id="btn-add" onclick="toggleForm()">
+          <i class="ti ti-plus"></i> Adicionar item
+        </button>
+      </div>
     </div>
 
     <!-- Formulário -->
@@ -435,6 +440,16 @@
   document.getElementById('f-nome').addEventListener('keydown', e => {
     if (e.key === 'Enter') adicionarItem();
   });
+
+  function novoMes() {
+    if (!confirm('Tem certeza que quer resetar a lista para o novo mês? Todos os itens serão apagados.')) return;
+    itens = [];
+    nextId = 1;
+    salvar();
+    renderizar();
+    document.getElementById('badge-mes').textContent = getMesAtual();
+    document.getElementById('subtitulo').textContent = 'Compras de ' + getMesAtual();
+  }
 
   // Inicia carregando os dados salvos
   carregar();
